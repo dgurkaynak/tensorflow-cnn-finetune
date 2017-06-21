@@ -128,7 +128,7 @@ def main(_):
             s = tf.Summary(value=[
                 tf.Summary.Value(tag="validation_accuracy", simple_value=test_acc)
             ])
-            val_writer.add_summary(s, epoch * val_batches_per_epoch)
+            val_writer.add_summary(s, epoch+1)
             print("{} Validation Accuracy = {:.4f}".format(datetime.datetime.now(), test_acc))
 
             # Reset the dataset pointers
