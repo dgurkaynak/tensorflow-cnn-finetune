@@ -39,14 +39,6 @@ def main(_):
     if not os.path.isdir(tensorboard_val_dir): os.mkdir(tensorboard_val_dir)
 
     # Write flags to txt
-    print('learning_rate={}'.format(FLAGS.learning_rate))
-    print('dropout_keep_prob={}'.format(FLAGS.dropout_keep_prob))
-    print('num_epochs={}'.format(FLAGS.num_epochs))
-    print('batch_size={}'.format(FLAGS.batch_size))
-    print('train_layers={}'.format(FLAGS.train_layers))
-    print('train_root_dir={}'.format(FLAGS.train_root_dir))
-    print('log_period={}'.format(FLAGS.log_period))
-
     flags_file_path = os.path.join(train_dir, 'flags.txt')
     flags_file = open(flags_file_path, 'w')
     flags_file.write('learning_rate={}\n'.format(FLAGS.learning_rate))
