@@ -13,7 +13,7 @@ tf.app.flags.DEFINE_integer('num_epochs', 10, 'Number of epochs for training')
 tf.app.flags.DEFINE_integer('batch_size', 128, 'Batch size')
 tf.app.flags.DEFINE_string('train_layers', 'fc8,fc7', 'Finetuning layers, seperated by commas')
 tf.app.flags.DEFINE_string('train_root_dir', '../training', 'Root directory to put the training data')
-tf.app.flags.DEFINE_integer('log_period', 50, 'Logging period in terms of iteration')
+tf.app.flags.DEFINE_integer('log_step', 10, 'Logging period in terms of iteration')
 
 NUM_CLASSES = 26
 TRAINING_FILE = '../data/train.txt'
@@ -47,7 +47,7 @@ def main(_):
     flags_file.write('batch_size={}\n'.format(FLAGS.batch_size))
     flags_file.write('train_layers={}\n'.format(FLAGS.train_layers))
     flags_file.write('train_root_dir={}\n'.format(FLAGS.train_root_dir))
-    flags_file.write('log_period={}\n'.format(FLAGS.log_period))
+    flags_file.write('log_step={}\n'.format(FLAGS.log_step))
     flags_file.close()
 
     # Placeholders
@@ -107,7 +107,7 @@ def main(_):
                 sess.run(train_op, feed_dict={x: batch_xs, y: batch_ys, dropout_keep_prob: FLAGS.dropout_keep_prob})
 
                 # Logging
-                if step % FLAGS.log_period == 0:
+                if step % FLAGS.log_step == 0:
                     s = sess.run(merged_summary, feed_dict={x: batch_xs, y: batch_ys, dropout_keep_prob: 1.})
                     train_writer.add_summary(s, epoch * train_batches_per_epoch + step)
 
