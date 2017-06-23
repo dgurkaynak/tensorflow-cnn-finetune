@@ -1,4 +1,5 @@
 /alexnet/bvlc_alexnet.npy
+/vggnet/vgg16_weights.npz
 /training
 /poop.py
 *.pyc
