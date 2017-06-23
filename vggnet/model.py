@@ -187,7 +187,7 @@ class VggNetModel(object):
             with tf.variable_scope(layer, reuse=True):
                 if parts[-1] == 'W':
                     var = tf.get_variable('weights')
-                    session.run(var.assign(weights[nameactivity]))
+                    session.run(var.assign(weights[name]))
                 elif parts[-1] == 'b':
                     var = tf.get_variable('biases')
                     session.run(var.assign(weights[name]))
