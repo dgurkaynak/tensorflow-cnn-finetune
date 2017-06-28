@@ -12,6 +12,7 @@ tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, 'Dropout keep probability')
 tf.app.flags.DEFINE_integer('num_epochs', 10, 'Number of epochs for training')
 tf.app.flags.DEFINE_integer('batch_size', 128, 'Batch size')
 tf.app.flags.DEFINE_string('train_layers', 'fc8,fc7', 'Finetuning layers, seperated by commas')
+tf.app.flags.DEFINE_string('multi_scale', '', 'As preprocessing; scale the image randomly between 2 numbers and crop randomly at networs input size')
 tf.app.flags.DEFINE_string('train_root_dir', '../training', 'Root directory to put the training data')
 tf.app.flags.DEFINE_integer('log_step', 10, 'Logging period in terms of iteration')
 
@@ -46,6 +47,7 @@ def main(_):
     flags_file.write('num_epochs={}\n'.format(FLAGS.num_epochs))
     flags_file.write('batch_size={}\n'.format(FLAGS.batch_size))
     flags_file.write('train_layers={}\n'.format(FLAGS.train_layers))
+    flags_file.write('multi_scale={}\n'.format(FLAGS.multi_scale))
     flags_file.write('train_root_dir={}\n'.format(FLAGS.train_root_dir))
     flags_file.write('log_step={}\n'.format(FLAGS.log_step))
     flags_file.close()
@@ -75,8 +77,14 @@ def main(_):
     saver = tf.train.Saver()
 
     # Batch preprocessors
+    multi_scale = FLAGS.multi_scale.split(',')
+    if len(multi_scale) == 2: 
+        multi_scale = [int(multi_scale[0]), int(multi_scale[1])]
+    else:
+        multi_scale = None
+
     train_preprocessor = BatchPreprocessor(dataset_file_path=TRAINING_FILE, num_classes=NUM_CLASSES,
-                                           output_size=[227, 227], horizontal_flip=True, shuffle=True)
+                                           output_size=[227, 227], horizontal_flip=True, shuffle=True, multi_scale=multi_scale)
     val_preprocessor = BatchPreprocessor(dataset_file_path=VAL_FILE, num_classes=NUM_CLASSES, output_size=[227, 227])
 
     # Get the number of training/validation steps per epoch
