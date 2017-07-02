@@ -68,16 +68,27 @@ class ResNetModel(object):
 
     def loss(self, batch_x, batch_y=None):
         y_predict = self.inference(batch_x)
-        cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(y_predict, batch_y)
+        # cross_entropy = tf.nn.sparse_softmax_cross_entropy_with_logits(logits=y_predict, labels=batch_y)
+        cross_entropy = tf.nn.softmax_cross_entropy_with_logits(logits=y_predict, labels=batch_y)
         cross_entropy_mean = tf.reduce_mean(cross_entropy)
         regularization_losses = tf.get_collection(tf.GraphKeys.REGULARIZATION_LOSSES)
         self.loss = tf.add_n([cross_entropy_mean] + regularization_losses)
         return self.loss
 
     def optimize(self, learning_rate, train_layers=[]):
-        # TODO
-        var_list = [v for v in tf.trainable_variables() if v.name.split('/')[0] in train_layers]
-        return tf.train.AdamOptimizer(learning_rate).minimize(self.loss, var_list=var_list)
+        trainable_var_names = ['weights', 'biases', 'beta', 'gamma']
+        var_list = [v for v in tf.trainable_variables() if
+            v.name.split(':')[0].split('/')[-1] in trainable_var_names and
+            contains(v.name, train_layers)]
+        train_op = tf.train.AdamOptimizer(learning_rate).minimize(self.loss, var_list=var_list)
+
+        ema = tf.train.ExponentialMovingAverage(MOVING_AVERAGE_DECAY)
+        tf.add_to_collection(UPDATE_OPS_COLLECTION, ema.apply([self.loss]))
+
+        batchnorm_updates = tf.get_collection(UPDATE_OPS_COLLECTION)
+        batchnorm_updates_op = tf.group(*batchnorm_updates)
+
+        return tf.group(train_op, batchnorm_updates_op)
 
     def load_original_weights(self, session, skip_layers=[]):
         weights_path = 'ResNet-L{}.npy'.format(self.depth)
