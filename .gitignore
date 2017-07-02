@@ -1,5 +1,8 @@
 /alexnet/bvlc_alexnet.npy
 /vggnet/vgg16_weights.npz
+/resnet/ResNet-L50.npy
+/resnet/ResNet-L101.npy
+/resnet/ResNet-L152.npy
 /training
 /poop.py
 *.pyc
