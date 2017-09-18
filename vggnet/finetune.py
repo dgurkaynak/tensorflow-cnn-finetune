@@ -16,7 +16,7 @@ tf.app.flags.DEFINE_string('multi_scale', '', 'As preprocessing; scale the image
 tf.app.flags.DEFINE_string('train_root_dir', '../training', 'Root directory to put the training data')
 tf.app.flags.DEFINE_integer('log_step', 10, 'Logging period in terms of iteration')
 
-NUM_CLASSES = 26
+NUM_CLASSES = 109
 TRAINING_FILE = '../data/train.txt'
 VAL_FILE = '../data/val.txt'
 FLAGS = tf.app.flags.FLAGS
