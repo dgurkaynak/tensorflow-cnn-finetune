@@ -27,6 +27,7 @@ class BatchPreprocessor(object):
             items = line.split()
             self.images.append(items[0])
             self.labels.append(int(items[1]))
+            # self.labels.append(0)
 
         # Shuffle the data
         if self.shuffle:

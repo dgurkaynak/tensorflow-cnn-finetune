@@ -58,6 +58,7 @@ class ResNetModel(object):
         with tf.variable_scope('scale5'):
             s5 = stack(s4, is_training=self.is_training, num_blocks=self.num_blocks[3], stack_stride=2, block_filters_internal=512)
 
+        self.s5 = s5
         # post-net
         avg_pool = tf.reduce_mean(s5, reduction_indices=[1, 2], name='avg_pool')
 
