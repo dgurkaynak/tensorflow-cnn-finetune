@@ -148,6 +148,7 @@ class VggNetModel(object):
             fc7w = tf.get_variable('weights', initializer=tf.truncated_normal([4096, 4096], dtype=tf.float32, stddev=1e-1))
             fc7b = tf.get_variable('biases', initializer=tf.constant(1.0, shape=[4096], dtype=tf.float32))
             fc7l = tf.nn.bias_add(tf.matmul(fc6, fc7w), fc7b)
+            self.fc7l = fc7l
             fc7 = tf.nn.relu(fc7l)
 
             if training:
