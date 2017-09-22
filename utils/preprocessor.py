@@ -8,13 +8,14 @@ import cv2
 class BatchPreprocessor(object):
 
     def __init__(self, dataset_file_path, num_classes, output_size=[227, 227], horizontal_flip=False, shuffle=False,
-                 mean_color=[132.2766, 139.6506, 146.9702], multi_scale=None):
+                 mean_color=[132.2766, 139.6506, 146.9702], multi_scale=None, disable_one_hot_label=False):
         self.num_classes = num_classes
         self.output_size = output_size
         self.horizontal_flip = horizontal_flip
         self.shuffle = shuffle
         self.mean_color = mean_color
         self.multi_scale = multi_scale
+        self.disable_one_hot_label = disable_one_hot_label
 
         self.pointer = 0
         self.images = []
@@ -91,8 +92,15 @@ class BatchPreprocessor(object):
 
         # Expand labels to one hot encoding
         one_hot_labels = np.zeros((batch_size, self.num_classes))
-        for i in range(len(labels)):
-            one_hot_labels[i][labels[i]] = 1
+        if self.disable_one_hot_label is False:
+            for i in range(len(labels)):
+                one_hot_labels[i][labels[i]] = 1
+
+            return images, one_hot_labels
 
         # Return array of images and labels
-        return images, one_hot_labels
+        labels_ = np.zeros(batch_size)
+        for i in range(len(labels)): 
+            labels_[i] = labels[i]
+            
+        return images, labels_
