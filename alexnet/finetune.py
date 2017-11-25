@@ -10,15 +10,15 @@ from preprocessor import BatchPreprocessor
 tf.app.flags.DEFINE_float('learning_rate', 0.0001, 'Learning rate for adam optimizer')
 tf.app.flags.DEFINE_float('dropout_keep_prob', 0.5, 'Dropout keep probability')
 tf.app.flags.DEFINE_integer('num_epochs', 10, 'Number of epochs for training')
+tf.app.flags.DEFINE_integer('num_classes', 26, 'Number of classes')
 tf.app.flags.DEFINE_integer('batch_size', 128, 'Batch size')
 tf.app.flags.DEFINE_string('train_layers', 'fc8,fc7', 'Finetuning layers, seperated by commas')
-tf.app.flags.DEFINE_string('multi_scale', '', 'As preprocessing; scale the image randomly between 2 numbers and crop randomly at networs input size')
+tf.app.flags.DEFINE_string('multi_scale', '', 'As preprocessing; scale the image randomly between 2 numbers and crop randomly at network\'s input size')
+tf.app.flags.DEFINE_string('training_file', '../data/train.txt', 'Training dataset file')
+tf.app.flags.DEFINE_string('val_file', '../data/val.txt', 'Validation dataset file')
 tf.app.flags.DEFINE_string('train_root_dir', '../training', 'Root directory to put the training data')
 tf.app.flags.DEFINE_integer('log_step', 10, 'Logging period in terms of iteration')
 
-NUM_CLASSES = 26
-TRAINING_FILE = '../data/train.txt'
-VAL_FILE = '../data/val.txt'
 FLAGS = tf.app.flags.FLAGS
 
 
@@ -54,12 +54,12 @@ def main(_):
 
     # Placeholders
     x = tf.placeholder(tf.float32, [FLAGS.batch_size, 227, 227, 3])
-    y = tf.placeholder(tf.float32, [None, NUM_CLASSES])
+    y = tf.placeholder(tf.float32, [None, FLAGS.num_classes])
     dropout_keep_prob = tf.placeholder(tf.float32)
 
     # Model
     train_layers = FLAGS.train_layers.split(',')
-    model = AlexNetModel(num_classes=NUM_CLASSES, dropout_keep_prob=dropout_keep_prob)
+    model = AlexNetModel(num_classes=FLAGS.num_classes, dropout_keep_prob=dropout_keep_prob)
     loss = model.loss(x, y)
     train_op = model.optimize(FLAGS.learning_rate, train_layers)
 
@@ -78,14 +78,14 @@ def main(_):
 
     # Batch preprocessors
     multi_scale = FLAGS.multi_scale.split(',')
-    if len(multi_scale) == 2: 
+    if len(multi_scale) == 2:
         multi_scale = [int(multi_scale[0]), int(multi_scale[1])]
     else:
         multi_scale = None
 
-    train_preprocessor = BatchPreprocessor(dataset_file_path=TRAINING_FILE, num_classes=NUM_CLASSES,
+    train_preprocessor = BatchPreprocessor(dataset_file_path=FLAGS.training_file, num_classes=FLAGS.num_classes,
                                            output_size=[227, 227], horizontal_flip=True, shuffle=True, multi_scale=multi_scale)
-    val_preprocessor = BatchPreprocessor(dataset_file_path=VAL_FILE, num_classes=NUM_CLASSES, output_size=[227, 227])
+    val_preprocessor = BatchPreprocessor(dataset_file_path=FLAGS.val_file, num_classes=FLAGS.num_classes, output_size=[227, 227])
 
     # Get the number of training/validation steps per epoch
     train_batches_per_epoch = np.floor(len(train_preprocessor.labels) / FLAGS.batch_size).astype(np.int16)
