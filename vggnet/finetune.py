@@ -16,7 +16,7 @@ tf.app.flags.DEFINE_string('train_layers', 'fc8,fc7', 'Finetuning layers, sepera
 tf.app.flags.DEFINE_string('multi_scale', '', 'As preprocessing; scale the image randomly between 2 numbers and crop randomly at network\'s input size')
 tf.app.flags.DEFINE_string('training_file', '../data/train.txt', 'Training dataset file')
 tf.app.flags.DEFINE_string('val_file', '../data/val.txt', 'Validation dataset file')
-tf.app.flags.DEFINE_string('train_root_dir', '../training', 'Root directory to put the training data')
+tf.app.flags.DEFINE_string('tensorboard_root_dir', '../training', 'Root directory to put the training logs and weights')
 tf.app.flags.DEFINE_integer('log_step', 10, 'Logging period in terms of iteration')
 
 FLAGS = tf.app.flags.FLAGS
@@ -26,13 +26,13 @@ def main(_):
     # Create training directories
     now = datetime.datetime.now()
     train_dir_name = now.strftime('vggnet_%Y%m%d_%H%M%S')
-    train_dir = os.path.join(FLAGS.train_root_dir, train_dir_name)
+    train_dir = os.path.join(FLAGS.tensorboard_root_dir, train_dir_name)
     checkpoint_dir = os.path.join(train_dir, 'checkpoint')
     tensorboard_dir = os.path.join(train_dir, 'tensorboard')
     tensorboard_train_dir = os.path.join(tensorboard_dir, 'train')
     tensorboard_val_dir = os.path.join(tensorboard_dir, 'val')
 
-    if not os.path.isdir(FLAGS.train_root_dir): os.mkdir(FLAGS.train_root_dir)
+    if not os.path.isdir(FLAGS.tensorboard_root_dir): os.mkdir(FLAGS.tensorboard_root_dir)
     if not os.path.isdir(train_dir): os.mkdir(train_dir)
     if not os.path.isdir(checkpoint_dir): os.mkdir(checkpoint_dir)
     if not os.path.isdir(tensorboard_dir): os.mkdir(tensorboard_dir)
@@ -48,7 +48,7 @@ def main(_):
     flags_file.write('batch_size={}\n'.format(FLAGS.batch_size))
     flags_file.write('train_layers={}\n'.format(FLAGS.train_layers))
     flags_file.write('multi_scale={}\n'.format(FLAGS.multi_scale))
-    flags_file.write('train_root_dir={}\n'.format(FLAGS.train_root_dir))
+    flags_file.write('tensorboard_root_dir={}\n'.format(FLAGS.tensorboard_root_dir))
     flags_file.write('log_step={}\n'.format(FLAGS.log_step))
     flags_file.close()
 
