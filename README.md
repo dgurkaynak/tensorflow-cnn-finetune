@@ -1,4 +1,4 @@
-# marvel-finetuning
+# tensorflow-cnn-finetune
 
 This repo is about finetuning some famous convolutional neural nets for [MARVEL](https://github.com/avaapm/marveldataset2016) dataset (ship image classification) using TensorFlow.
 
@@ -18,7 +18,7 @@ Requirements:
  * OpenCV2
 
 
-## Dataset
+## Marvel
 
 [MARVEL](https://github.com/avaapm/marveldataset2016) is a dataset contains over 2M ship images collected from shipspotting.com. For image classification in the paper they use 237K images labelled in 26 superclasses.
 
@@ -27,6 +27,20 @@ You can download the whole dataset with [python repo they provided](https://gith
 Or you can download just needed images directly from [this dropbox link](https://www.dropbox.com/s/tuzrz8hckxli6x3/marvel-dataset.zip?dl=0).
 
 After downloading the dataset, you need to update the paths `data/train.txt` and `data/val.txt`.
+
+## Custom Dataset
+
+You can update `data/train.txt` and `data/val.txt` files for your custom dataset. The format must be like following:
+
+```
+/absolute/path/to/image1.jpg class_index
+/absolute/path/to/image2.jpg class_index
+...
+```
+
+`class_index` must start from `0`.
+
+> Do not forget to pass `--num_classes` flag when running `finetune.py` script.
 
 ## Usage
 
@@ -45,7 +59,7 @@ python finetune.py --help
 # Start finetuning
 python finetune.py [options]
 
-# You can observe finetuning with the tensorboard (default train_root_dir is ../training)
+# You can observe finetuning with the tensorboard (default tensorboard_root_dir is ../training)
 tensorboard --logdir ../training
 ```
 
