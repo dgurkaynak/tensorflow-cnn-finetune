@@ -19,7 +19,7 @@ class CustomNetModel(object):
         norm2 = lrn(conv2, 4, 0.001 / 9.0, 0.75, name='norm2')
         pool2 = max_pool(norm2, 3, 3, 2, 2, name ='pool2')
 
-        batch_size = int(x.get_shape()[-1])
+        batch_size = int(x.get_shape()[0])
         reshape = tf.reshape(pool2, [batch_size, -1])
         dim = reshape.get_shape()[1].value
         flattened = tf.reshape(pool2, [-1, dim])
