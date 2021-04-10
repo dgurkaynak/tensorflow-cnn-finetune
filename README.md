@@ -1,36 +1,23 @@
 # tensorflow-cnn-finetune
 
-This repo is about finetuning some famous convolutional neural nets for [MARVEL](https://github.com/avaapm/marveldataset2016) dataset (ship image classification) using TensorFlow.
+This repo is about finetuning some famous convolutional neural nets using TensorFlow.
 
 ConvNets:
 
- * [AlexNet](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf)
- * [VGGNet](https://arxiv.org/pdf/1409.1556.pdf)
- * [ResNet](https://arxiv.org/pdf/1512.03385.pdf)
- * [TODO] Inception
+- [AlexNet](https://papers.nips.cc/paper/4824-imagenet-classification-with-deep-convolutional-neural-networks.pdf)
+- [VGGNet](https://arxiv.org/pdf/1409.1556.pdf)
+- [ResNet](https://arxiv.org/pdf/1512.03385.pdf)
 
 
 Requirements:
-
- * Python 2.7 (Not tested with Python 3)
- * Tensorflow >=1.0
- * NumPy
- * OpenCV2
+- Python 2.7 or 3.x
+- Tensorflow 1.x (tested with 1.15.1)
+- OpenCV2 (for data augmentation)
 
 
-## Marvel
+## Dataset file
 
-[MARVEL](https://github.com/avaapm/marveldataset2016) is a dataset contains over 2M ship images collected from shipspotting.com. For image classification in the paper they use 237K images labelled in 26 superclasses.
-
-You can download the whole dataset with [python repo they provided](https://github.com/avaapm/marveldataset2016).
-
-Or you can download just needed images directly from [this dropbox link](https://www.dropbox.com/s/tuzrz8hckxli6x3/marvel-dataset.zip?dl=0).
-
-After downloading the dataset, you need to update the paths `data/train.txt` and `data/val.txt`.
-
-## Custom Dataset
-
-You can update `data/train.txt` and `data/val.txt` files for your custom dataset. The format must be like following:
+You need to setup two dataset files for training and validation. The format must be like following:
 
 ```
 /absolute/path/to/image1.jpg class_index
@@ -40,31 +27,140 @@ You can update `data/train.txt` and `data/val.txt` files for your custom dataset
 
 `class_index` must start from `0`.
 
+Sample dataset files can be found at [data/train.txt](data/train.txt) and [data/val.txt](data/val.txt).
+
 > Do not forget to pass `--num_classes` flag when running `finetune.py` script.
 
-## Usage
+## AlexNet
 
-Make sure dataset is downloaded and file paths are updated.
+Go into `alexnet` folder
 
 ```bash
-# Go to related folder that you want to finetune
-cd vggnet
+cd alexnet
+```
 
-# Download the weights
+Download the weights if you hadn't before.
+
+```bash
 ./download_weights.sh
+````
 
-# See finetuning options (there is some difference between them, like dropout or resnet depth)
-python finetune.py --help
+Run the `finetune.py` script with your options.
 
-# Start finetuning
-python finetune.py [options]
+```bash
+python finetune.py \
+    --training_file=../data/train.txt \
+    --val_file=../data/val.txt \
+    --num_classes 26
+```
 
-# You can observe finetuning with the tensorboard (default tensorboard_root_dir is ../training)
+| Option | Default | Description |
+|-|-|-|
+| `--training_file` | ../data/train.txt | Training dataset file |
+| `--val_file` | ../data/val.txt | Validation dataset file |
+| `--num_classes` | 26 | Number of classes |
+| `--train_layers` | fc8,fc7 | Layers to be finetuned, seperated by commas. Avaliable layers: `fc8`, `fc7`, `fc6`, `conv5`, `conv4`, `conv3`, `conv2`, `conv1` |
+| `--num_epochs` | 10 | How many epochs to run training |
+| `--learning_rate` | 0.0001 | Learning rate for ADAM optimizer |
+| `--dropout_keep_prob` | 0.5 | Dropout keep probability |
+| `--batch_size` | 128 | Batch size |
+| `--multi_scale` |  | As a preprocessing step, it scalse the image randomly between 2 numbers and crop randomly at network's input size. For example if you set it `228,256`: - Select a random number between 228 and 256 -- S - Scale input image to `S x S` pixels - Crop it 227x227 randomly |
+| `--tensorboard_root_dir` | ../training | Root directory to put the training logs and weights |
+| `--log_step` | 10 | Logging period in terms of a batch run |
+
+
+You can observe finetuning with the tensorboard.
+
+```bash
 tensorboard --logdir ../training
 ```
 
-## Examples
+## VGGNet
 
-- [AlexNet](https://github.com/dgurkaynak/marvel-finetuning/blob/master/alexnet/examples.sh)
-- [VGGNet](https://github.com/dgurkaynak/marvel-finetuning/blob/master/vggnet/examples.sh)
-- [ResNet](https://github.com/dgurkaynak/marvel-finetuning/blob/master/resnet/examples.sh)
+Go into `vggnet` folder
+
+```bash
+cd vggnet
+```
+
+Download the weights if you hadn't before.
+
+```bash
+./download_weights.sh
+````
+
+Run the `finetune.py` script with your options.
+
+```bash
+python finetune.py \
+    --training_file=../data/train.txt \
+    --val_file=../data/val.txt \
+    --num_classes 26
+```
+
+| Option | Default | Description |
+|-|-|-|
+| `--training_file` | ../data/train.txt | Training dataset file |
+| `--val_file` | ../data/val.txt | Validation dataset file |
+| `--num_classes` | 26 | Number of classes |
+| `--train_layers` | fc8,fc7 | Layers to be finetuned, seperated by commas. Avaliable layers: `fc8`, `fc7`, `fc6`, `conv5_1`, `conv5_2`, `conv5_3`, `conv4_1`, `conv4_2`, `conv4_3`, `conv3_1`, `conv3_2`, `conv3_3`, `conv2_1`, `conv2_2`, `conv1_1`, `conv1_2` |
+| `--num_epochs` | 10 | How many epochs to run training |
+| `--learning_rate` | 0.0001 | Learning rate for ADAM optimizer |
+| `--dropout_keep_prob` | 0.5 | Dropout keep probability |
+| `--batch_size` | 128 | Batch size |
+| `--multi_scale` |  | As a preprocessing step, it scalse the image randomly between 2 numbers and crop randomly at network's input size. For example if you set it `228,256`: - Select a random number between 228 and 256 -- S - Scale input image to `S x S` pixels - Crop it 224x224 randomly |
+| `--tensorboard_root_dir` | ../training | Root directory to put the training logs and weights |
+| `--log_step` | 10 | Logging period in terms of a batch run |
+
+
+You can observe finetuning with the tensorboard.
+
+```bash
+tensorboard --logdir ../training
+```
+
+
+## ResNet
+
+Go into `resnet` folder
+
+```bash
+cd resnet
+```
+
+Download the weights if you hadn't before.
+
+```bash
+./download_weights.sh
+````
+
+Run the `finetune.py` script with your options.
+
+```bash
+python finetune.py \
+    --training_file=../data/train.txt \
+    --val_file=../data/val.txt \
+    --num_classes 26
+```
+
+| Option | Default | Description |
+|-|-|-|
+| `--resnet_depth` | 50 | ResNet architecture to be used: 50, 101 or 152
+| `--training_file` | ../data/train.txt | Training dataset file |
+| `--val_file` | ../data/val.txt | Validation dataset file |
+| `--num_classes` | 26 | Number of classes |
+| `--train_layers` | fc | Layers to be finetuned, seperated by commas. Fully-connected last layer: `fc`, tho whole 5th layer: `scale5`, or some blocks of a layer: `scale4/block6,scale4/block5` |
+| `--num_epochs` | 10 | How many epochs to run training |
+| `--learning_rate` | 0.0001 | Learning rate for ADAM optimizer |
+| `--dropout_keep_prob` | 0.5 | Dropout keep probability |
+| `--batch_size` | 128 | Batch size |
+| `--multi_scale` |  | As a preprocessing step, it scalse the image randomly between 2 numbers and crop randomly at network's input size. For example if you set it `228,256`: - Select a random number between 228 and 256 -- S - Scale input image to `S x S` pixels - Crop it 224x224 randomly |
+| `--tensorboard_root_dir` | ../training | Root directory to put the training logs and weights |
+| `--log_step` | 10 | Logging period in terms of a batch run |
+
+
+You can observe finetuning with the tensorboard.
+
+```bash
+tensorboard --logdir ../training
+```
