@@ -92,7 +92,7 @@ class ResNetModel(object):
 
     def load_original_weights(self, session, skip_layers=[]):
         weights_path = 'ResNet-L{}.npy'.format(self.depth)
-        weights_dict = np.load(weights_path, encoding='bytes').item()
+        weights_dict = np.load(weights_path, encoding='bytes', allow_pickle=True).item()
 
         for op_name in weights_dict:
             parts = op_name.split('/')

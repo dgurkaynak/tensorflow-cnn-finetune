@@ -57,7 +57,7 @@ class AlexNetModel(object):
         return tf.train.AdamOptimizer(learning_rate).minimize(self.loss, var_list=var_list)
 
     def load_original_weights(self, session, skip_layers=[]):
-        weights_dict = np.load('bvlc_alexnet.npy', encoding='bytes').item()
+        weights_dict = np.load('bvlc_alexnet.npy', encoding='bytes', allow_pickle=True).item()
 
         for op_name in weights_dict:
             # if op_name in skip_layers:
