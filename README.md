@@ -199,6 +199,8 @@ Go into `resnet` folder
 cd resnet
 ```
 
+### Finetuning
+
 Download the weights if you hadn't before.
 
 ```bash
@@ -235,3 +237,39 @@ You can observe finetuning with the tensorboard.
 ```bash
 tensorboard --logdir ../training
 ```
+
+### Testing a dataset file
+
+At the end of each epoch while finetuning, the current state of the weights are saved into `../training` folder (or any folder you specified with `--tensorboard_root_dir` option). Go to that folder and locate the model and epoch you want to test.
+
+You must have your test dataset file as mentinoned before.
+
+```bash
+python test.py \
+    --ckpt ../training/resnet_XXXXX_XXXX/checkpoint/model_epoch1.ckpt \
+    --num_classes 26 \
+    --test_file ../data/test.txt
+```
+
+| Option | Default | Description |
+|-|-|-|
+| `--ckpt` |  | Checkpoint path; it must end with ".ckpt" |
+| `--resnet_depth` | 50 | ResNet architecture to be used: 50, 101 or 152
+| `--num_classes` | 26 | Number of classes |
+| `--test_file` | ../data/val.txt | Test dataset file |
+| `--batch_size` | 128 | Batch size |
+
+### Predicting a single image
+
+```bash
+python predict.py \
+    --ckpt ../training/resnet_XXXXX_XXXX/checkpoint/model_epoch1.ckpt \
+    --input_image=/some/path/to/image.jpg
+```
+
+| Option | Default | Description |
+|-|-|-|
+| `--ckpt` |  | Checkpoint path; it must end with ".ckpt" |
+| `--resnet_depth` | 50 | ResNet architecture to be used: 50, 101 or 152
+| `--num_classes` | 26 | Number of classes |
+| `--input_image` |  | The path of input image |
